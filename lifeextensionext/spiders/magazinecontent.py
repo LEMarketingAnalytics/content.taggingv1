@@ -52,7 +52,7 @@ class MagazinecontentSpider(scrapy.Spider):
             yield scrapy.Request(url3, callback=self.parse_article)
     
     def parse_article(self, response):
-        articles = response.xpath("//*[contains(@class, 'content')]//p").extract()[2:11]
+        articles = response.xpath("//*[contains(@class, 'content')]//p").extract()[2:-1]
         article = ''.join(articles)
 
         article_url = response.url
@@ -70,6 +70,10 @@ class MagazinecontentSpider(scrapy.Spider):
         article = re.sub(r" +", " ", article)
         article = re.sub(r"\"", " ", article)
         article = re.sub(r",,,", ",", article)
+        article = re.sub(r".[0-9].*", ".", article)
+        article = re.sub(r",[0-9].*?", ".", article)
+        article = re.sub(r"-[0-9].*?", "..", article)
+        article = re.sub(r"&amp;", " ", article)
 
         yield {
             'article': article,
